@@ -1,0 +1,7 @@
+IncludeBlocks: Regroup
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+TabWidth: 4
+IndentWidth: 4
+BreakBeforeBraces: Linux
+AllowShortLoopsOnASingleLine: true
