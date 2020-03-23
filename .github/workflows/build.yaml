@@ -50,4 +50,4 @@ jobs:
 
       - name: Compile Sketch
         run: |
-          arduino-cli compile --fqbn ${{ matrix.fqbn }} tempeh.ino
+          arduino-cli compile --warnings all --fqbn ${{ matrix.fqbn }} tempeh.ino
