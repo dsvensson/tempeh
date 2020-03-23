@@ -1,0 +1,53 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  ci-matrix:
+    strategy:
+      matrix:
+        arduino-platform: ["esp32:esp32"]
+        include:
+          - arduino-platform: "esp32:esp32"
+            board-version: "1.0.4"
+            fqbn: "esp32:esp32:lolin32"
+
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Cache python modules
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-python-${{ hashFiles('.github/workflows/build.yaml') }}
+
+      - name: Cache arduino toolchain
+        uses: actions/cache@v1
+        with:
+          path: ~/.arduino15
+          key: ${{ runner.os }}-arduino-${{ hashFiles('.github/workflows/build.yaml') }}
+
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v1.0.0
+
+      - name: Install python modules
+        run: |
+          pip install pyserial
+
+      - name: Install libraries
+        run: |
+          arduino-cli core update-index
+          arduino-cli lib install "ArduinoJson@6.15.0"
+          arduino-cli lib install "Adafruit BME280 Library@2.0.1"
+
+      - name: Install platform
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install ${{ matrix.arduino-platform }}@${{ matrix.board-version }}
+
+      - name: Compile Sketch
+        run: |
+          arduino-cli compile --fqbn ${{ matrix.fqbn }} tempeh.ino
